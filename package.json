@@ -1,0 +1,26 @@
+{
+  "name": "node-red-contrib-php-function",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/divengine/node-red-contrib-php-function"
+  },
+  "description": "Define a function with PHP instead of Javascript",
+  "keywords": [
+    "node-red",
+    "function",
+    "php",
+    "exec",
+    "polyglot",
+    "hack"
+  ],
+  "author": "Rafa Rodriguez",
+  "license": "MIT",
+  "node-red": {
+    "nodes": {
+      "php-function": "lib/php-function.js"
+    }
+  },
+  "dependencies": {
+  }
+}
