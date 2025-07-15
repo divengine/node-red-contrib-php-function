@@ -1,23 +1,39 @@
 <script type="text/javascript">
-    RED.nodes.registerType('php-function',{
+    /**
+     * Register the custom Node-RED node type 'php-function'.
+     * This sets up the node's appearance, editable properties, and the ACE editor for PHP code.
+     */
+    RED.nodes.registerType('php-function', {
         category: 'function',
         color: '#fdd0a2',
+
         defaults: {
-            name: {value: ""},
-            func: {value: "\nreturn msg;"},
-            outputs: {value: 1}  // Forma oculta de almacenar la cantidad de salidas del nodo
+            name: { value: "" },     // Display name of the node
+            func: { value: "\nreturn msg;" }, // Default PHP function code template
+            outputs: { value: 1 }    // Number of outputs (stored but not shown)
         },
+
         inputs: 1,
         outputs: 1,
         icon: "function.png",
-        label: function() {
+
+        /**
+         * Define the label displayed on the node.
+         */
+        label: function () {
             return this.name || "PHP Function";
         },
-        oneditprepare: function() {
+
+        /**
+         * Prepare the edit dialog when the node is opened.
+         * Sets up the ACE editor with PHP mode, autocompletion, and Node-RED helper keywords.
+         */
+        oneditprepare: function () {
             $("#node-input-outputs").spinner({ min: 1 });
 
             var langTools = ace.require('ace/ext/language_tools');
             this.editor = ace.edit('node-input-func-editor');
+
             this.editor.getSession().setMode('ace/mode/php');
             this.editor.setValue($("#node-input-func").val(), -1);
             this.editor.setOptions({
@@ -28,10 +44,13 @@
                 tabSize: 4
             });
 
+            // Keywords that are commonly used in Node-RED flows
             var noderedKeywords = [
                 'msg', 'msg["payload"]', 'node', 'node.send',
                 'node.log', 'node.warn', 'node.error', 'node.status'
             ];
+
+            // Add custom completer for Node-RED context keywords
             this.editor.completers.push({
                 getCompletions: function (editor, session, pos, prefix, callback) {
                     callback(null, noderedKeywords.map(function (word) {
@@ -47,27 +66,41 @@
 
             this.editor.focus();
         },
-        oneditsave: function() {
+
+        /**
+         * Save changes from the ACE editor back to the hidden input field.
+         * Also checks for syntax errors and updates the 'noerr' field.
+         */
+        oneditsave: function () {
             var annot = this.editor.getSession().getAnnotations();
             this.noerr = 0;
             $("#node-input-noerr").val(0);
+
             for (var k = 0; k < annot.length; k++) {
                 if (annot[k].type === "error") {
                     $("#node-input-noerr").val(annot.length);
                     this.noerr = annot.length;
                 }
             }
+
             $("#node-input-func").val(this.editor.getValue());
             delete this.editor;
         },
-        oneditresize: function(size) {
+
+        /**
+         * Resize the ACE editor dynamically when the dialog window changes size.
+         */
+        oneditresize: function (size) {
             var rows = $("#dialog-form>div:not(.node-text-editor-row)");
             var height = $("#dialog-form").height();
-            rows.each(function() {
+
+            rows.each(function () {
                 height -= $(this).outerHeight(true);
             });
+
             var editorRow = $("#dialog-form>div.node-text-editor-row");
             height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
+
             $(".node-text-editor").css("height", height + "px");
             this.editor.resize();
         }
@@ -76,15 +109,25 @@
 
 <script type="text/x-red" data-template-name="php-function">
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> <span>Name</span></label>
+        <label for="node-input-name">
+            <i class="fa fa-tag"></i> <span>Name</span>
+        </label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+
     <div class="form-row" style="margin-bottom: 0px;">
-        <label for="node-input-func"><i class="fa fa-code"></i> <span>Function</span></label>
+        <label for="node-input-func">
+            <i class="fa fa-code"></i> <span>Function</span>
+        </label>
+        <!-- Hidden fields to store the code and error state -->
         <input type="hidden" id="node-input-func">
         <input type="hidden" id="node-input-noerr">
     </div>
+
     <div class="form-row node-text-editor-row">
-        <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-func-editor"></div>
+        <!-- ACE editor container for editing the PHP function -->
+        <div style="height: 250px; min-height:150px;" 
+             class="node-text-editor" 
+             id="node-input-func-editor"></div>
     </div>
-    <div class="form-row">
+</script>
