@@ -1,98 +1,125 @@
-# Node-RED PHP Function Node
+# Divengine PHP Function Node for Node-RED
 
-## Run PHP Functions in Node-RED
-
-Node-RED is an amazing automation tool, but writing functions in JavaScript can sometimes be inconvenient.  
-This node allows you to write functions in PHP instead of JavaScript, giving more flexibility to those who prefer PHP.
-
-However, this is an experimental project and not recommended for production.  
-If you decide to use it in production, do so at your own risk. And if your boss asks… I warned you.
+**Run PHP functions inside Node-RED flows**
 
 ---
 
-## Installation
+Node-RED is a powerful low-code tool for automating tasks and connecting systems.  
+By default, all custom logic is written in JavaScript — but what if you prefer PHP?  
+This node lets you write and run **PHP code** instead of JavaScript inside your flows.
 
-Before installing, ensure you have PHP installed on your system.  
-This node uses `php` in CLI mode, so it must be accessible from the terminal.
+> ⚠️ **Experimental:** This is an experimental project.  
+> It’s **not production-ready**. Use at your own risk — and if your boss asks, you didn’t hear it from us!
 
-To install the node, run the following command:
+---
 
+## ✨ Features
+
+✅ Write Node-RED function logic in PHP  
+✅ Receives the `msg` object as an associative PHP array (`$msg`)  
+✅ Return a new `$msg` or `null` to drop the message  
+✅ Supports multiple outputs, just like the standard Function node  
+✅ Logging and error handling are integrated
+
+---
+
+## 📦 Installation
+
+**Prerequisite:**  
+Make sure `php` is installed and available in your system’s PATH.  
+This node uses PHP in **CLI mode**.
+
+Install globally with npm:
+
+```bash
 npm install -g node-red-contrib-php-function
+```
 
-After installation, restart Node-RED, and the node will be available in the "Function" category.
+Restart Node-RED, and the node will appear under the **“Function”** category.
 
 ---
 
-## Usage
+## ⚙️ How to Use
 
-This node works just like Node-RED's standard function node, but instead of JavaScript, it allows writing code in PHP.
+This works just like the standard Function node:  
+You write PHP code that processes `msg` and returns a new one.
 
-### Features
+### 📌 Example
 
-- Receives a msg object, which is converted into a PHP associative array ($msg).
-- The function must return an associative array or null (to discard the message).
-- Supports multiple outputs (outputs), just like the standard function node.
+Multiply `msg["payload"]` by 2:
 
-### Example PHP Code
-
-Multiply msg["payload"] by 2 and return the result:
-
+```php
 return ["payload" => $msg["payload"] * 2];
+```
 
-If msg["payload"] is 5, the node will output {"payload": 10}.
+**Input:** `{ "payload": 5 }`  
+**Output:** `{ "payload": 10 }`
 
-### Logging and Error Handling
+---
 
-You can use the following functions for debugging and error handling:
+## 🐞 Logging & Errors
 
-node.log("Log message");  
-node.warn("Important warning");  
-node.error("Something went wrong!");  
+Use these functions for debugging:
 
-To trigger a Catch node, use:
+```javascript
+node.log("Something happened");
+node.warn("This might be important");
+node.error("Something went wrong!");
+```
 
-node.error("Error message", $msg);
+To trigger a **Catch** node, pass `$msg` as a second parameter:
 
-### Sending Messages
+    node.error("Oops!", $msg);
 
-The function can return messages in various formats:
+---
 
-A single message:
+## 🔀 Multiple Outputs
 
-return ["payload" => "Hello from PHP"];
+Return an array of messages, one per output.
 
-Multiple messages to different outputs:
+Example:
 
-return [  
-    ["payload" => "Output 1"],  
-    ["payload" => "Output 2"]  
+```php
+return [
+  ["payload" => "First output"],
+  ["payload" => "Second output"]
 ];
+```
 
-If a value is null, that output will be ignored.
-
----
-
-## Caveats and Limitations
-
-This node is still experimental. Keep the following in mind:
-
-- JSON only: Only JSON-serializable data types are supported. PHP objects or resources will not be sent correctly.
-- Messages processed sequentially: PHP is synchronous by nature. Although it runs in a separate subprocess, messages are processed one at a time.
-- No sandboxing: The PHP code runs without security restrictions. Do not use this node in untrusted environments.
-- Possible concurrency issues: If multiple messages arrive at the node simultaneously, execution might not be optimal.
+Outputs can be `null` to skip.
 
 ---
 
-## More Information
+## ⚡ Limitations
 
-For more details on writing function nodes in Node-RED, check the official documentation at nodered.org/docs/writing-functions.html.
+🚧 This project is experimental. Please keep in mind:
 
-If you find bugs or improvements, feel free to open an issue in the repository. Contributions are welcome!
+- **JSON only:** Only JSON-serializable values are supported.
+- **One at a time:** PHP runs synchronously. Each message is processed in order.
+- **No sandbox:** Your PHP code runs without security restrictions. Never run untrusted code!
+- **Concurrency:** If multiple messages arrive at once, performance may be impacted.
 
 ---
 
-### Project Status
+## 🧩 Why PHP?
 
-Not recommended for production.  
-Useful for experimentation and local development.  
-Potential improvements in the future.
+Some teams have legacy PHP systems or developers who prefer PHP syntax.  
+This node provides a bridge without rewriting everything in JavaScript.
+
+---
+
+## 🤝 Contributing
+
+We welcome issues, ideas and PRs!  
+If you’d like to help improve the node, please:
+
+- 🐛 Open an Issue
+- 🔀 Submit a Pull Request
+- ⭐ Star the repo if you find it useful!
+
+---
+
+## 📜 License
+
+This project is open source, released under the **MIT License**.  
+See `LICENSE` for details.
